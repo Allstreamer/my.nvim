@@ -92,11 +92,11 @@ require("lazy").setup({
 -- ##############
 -- ## LSP Zero ##
 -- ##############
-local lsp = require('lsp-zero').preset("recomended")
+local lsp = require('lsp-zero').preset('recomended')
 
 -- GDscript compatibility
 require('lspconfig').gdscript.setup({
-  cmd = {"nc", "localhost", "6005"}
+  cmd = {'nc', 'localhost', '6005'},
 })
 
 lsp.on_attach(function(client, bufnr)

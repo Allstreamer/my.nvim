@@ -92,10 +92,12 @@ require("lazy").setup({
 -- ##############
 -- ## LSP Zero ##
 -- ##############
-local lsp = require('lsp-zero').preset({})
+local lsp = require('lsp-zero').preset("recomended")
 
 -- GDscript compatibility
-require('lspconfig').gdscript.setup({})
+require('lspconfig').gdscript.setup({
+  cmd = {"nc", "localhost", "6005"}
+})
 
 lsp.on_attach(function(client, bufnr)
   -- see :help lsp-zero-keybindings

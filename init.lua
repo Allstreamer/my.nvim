@@ -5,6 +5,9 @@
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
 -- #####################
 -- ## Package Manager ##
 -- #####################
@@ -28,6 +31,13 @@ require("lazy").setup({
   -- Auto manages indentation
   'tpope/vim-sleuth',
   'tpope/vim-fugitive',
+
+  {'nvim-tree/nvim-tree.lua', lazy = false},
+
+  {
+    'nvim-telescope/telescope.nvim', tag = '0.1.2',
+    dependencies = { 'nvim-lua/plenary.nvim' }
+  },
 
   -- Keymap display
   { 'folke/which-key.nvim', opts = {} },
@@ -94,16 +104,22 @@ require("lazy").setup({
 -- ##############
 local lsp = require('lsp-zero').preset('recomended')
 
--- GDscript compatibility
-require('lspconfig').gdscript.setup({
-  cmd = {'nc', 'localhost', '6005'},
-})
-
 lsp.on_attach(function(client, bufnr)
   -- see :help lsp-zero-keybindings
   -- to learn the available actions
   lsp.default_keymaps({buffer = bufnr})
 end)
+
+lsp.ensure_installed({
+    'lua-language-server',
+})
+
+-- GDscript compatibility
+require('lspconfig').gdscript.setup({
+  cmd = {'nc', '127.0.0.1', '6005'},
+})
+
+lsp.setup_servers({'gdscript'})
 
 lsp.setup()
 -- vim.lsp.set_log_level("debug")
@@ -114,7 +130,7 @@ lsp.setup()
 -- ################
 
 require('nvim-treesitter.configs').setup({
-  ensure_installed = { 'vimdoc', 'rust', 'lua', 'gdscript', 'python', 'c', 'cpp', 'dart', 'javascript', 'typescript' },
+  ensure_installed = { 'vimdoc', 'lua', 'gdscript', 'python'},
   sync_install = false,
   auto_install = true,
   highlight = {
@@ -130,6 +146,27 @@ require('nvim-treesitter.configs').setup({
   },
 })
 
+-- ###############
+-- ## Nvim Tree ##
+-- ###############
+require("nvim-tree").setup({
+  actions = {
+    open_file = {
+      quit_on_open = true,
+    }
+  }
+})
+
+-- Magic
+vim.api.nvim_create_autocmd("BufEnter", {
+  group = vim.api.nvim_create_augroup("NvimTreeClose", {clear = true}),
+  pattern = "NvimTree_*",
+  callback = function()
+    local layout = vim.api.nvim_call_function("winlayout", {})
+    if layout[1] == "leaf" and vim.api.nvim_buf_get_option(vim.api.nvim_win_get_buf(layout[2]), "filetype") == "NvimTree" and layout[3] == nil then vim.cmd("confirm quit") end
+  end
+})
+-- Magic End
 
 -- ###########
 -- ## Theme ##
@@ -139,8 +176,28 @@ vim.cmd [[colorscheme moonfly]]
 -- ##############
 -- ## Keybinds ##
 -- ##############
--- Vanilla
-vim.keymap.set('n', '<leader>e', vim.cmd.Ex)
+-- Nvim Tree
+vim.keymap.set('n', '<leader>e', function()
+  vim.cmd [[NvimTreeToggle]]
+end, { desc = 'Toggle [e]xplorer'})
+
+-- Telescope
+-- See `:help telescope` and `:help telescope.setup()`
+require('telescope').setup {
+  defaults = {
+    mappings = {
+      i = {
+        ['<C-u>'] = false,
+        ['<C-d>'] = false,
+      },
+    },
+  },
+}
+vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[s]earch [f]iles' })
+vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[s]earch [h]elp' })
+vim.keymap.set('n', '<leader>sb', require('telescope.builtin').oldfiles, { desc = '[sb] Find recently opened files' })
+
+
 
 -- ##############
 -- ## Settings ##
@@ -166,8 +223,11 @@ vim.wo.signcolumn = 'yes'
 vim.o.updatetime = 250
 vim.o.timeoutlen = 300
 
--- Set completeopt to have a better completion experience
-vim.o.completeopt = 'menuone,noselect'
+
+vim.o.tabstop=4
+vim.o.shiftwidth=4
+vim.o.expandtab=true
+
 
 -- ##########################################
 -- ## Secrete Sauce i don't yet understand ##
@@ -176,6 +236,9 @@ vim.o.completeopt = 'menuone,noselect'
 -- Keymaps for better default experience
 -- See `:help vim.keymap.set()`
 vim.keymap.set({ 'n', 'v' }, '<Space>', '<Nop>', { silent = true })
+
+-- Set completeopt to have a better completion experience
+vim.o.completeopt = 'menuone,noselect'
 
 -- Remap for dealing with word wrap
 vim.keymap.set('n', 'k', "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
@@ -191,4 +254,7 @@ vim.api.nvim_create_autocmd('TextYankPost', {
   group = highlight_group,
   pattern = '*',
 })
+
+vim.o.breakindent = true
+vim.wo.signcolumn = 'yes'
 

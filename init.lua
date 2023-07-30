@@ -102,7 +102,7 @@ require("lazy").setup({
 -- ##############
 -- ## LSP Zero ##
 -- ##############
-local lsp = require('lsp-zero').preset('recomended')
+local lsp = require('lsp-zero').preset({})
 
 lsp.on_attach(function(client, bufnr)
   -- see :help lsp-zero-keybindings
@@ -110,20 +110,12 @@ lsp.on_attach(function(client, bufnr)
   lsp.default_keymaps({buffer = bufnr})
 end)
 
-lsp.ensure_installed({
-    'lua-language-server',
-})
-
 -- GDscript compatibility
 require('lspconfig').gdscript.setup({
   cmd = {'nc', '127.0.0.1', '6005'},
 })
 
-lsp.setup_servers({'gdscript'})
-
 lsp.setup()
--- vim.lsp.set_log_level("debug")
-
 
 -- ################
 -- ## TreeSitter ##

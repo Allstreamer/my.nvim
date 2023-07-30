@@ -34,6 +34,9 @@ require("lazy").setup({
 
   {'nvim-tree/nvim-tree.lua', lazy = false},
 
+  { 'echasnovski/mini.move', version = '*' },
+  { 'echasnovski/mini.fuzzy', version = '*' },
+
   {
     'nvim-telescope/telescope.nvim', tag = '0.1.2',
     dependencies = { 'nvim-lua/plenary.nvim' }
@@ -149,6 +152,7 @@ require("nvim-tree").setup({
   }
 })
 
+
 -- Magic
 vim.api.nvim_create_autocmd("BufEnter", {
   group = vim.api.nvim_create_augroup("NvimTreeClose", {clear = true}),
@@ -160,10 +164,28 @@ vim.api.nvim_create_autocmd("BufEnter", {
 })
 -- Magic End
 
--- ###########
--- ## Theme ##
--- ###########
-vim.cmd [[colorscheme moonfly]]
+-- ###############
+-- ## Mini.Nvim ##
+-- ###############
+require('mini.move').setup()
+require('mini.fuzzy').setup()
+
+
+-- Telescope
+-- See `:help telescope` and `:help telescope.setup()`
+require('telescope').setup {
+  defaults = {
+    generic_sorter = require('mini.fuzzy').get_telescope_sorter,
+    file_sorter = require('mini.fuzzy').get_telescope_sorter,
+    mappings = {
+      i = {
+        ['<C-u>'] = false,
+        ['<C-d>'] = false,
+      },
+    },
+  },
+}
+
 
 -- ##############
 -- ## Keybinds ##
@@ -173,21 +195,16 @@ vim.keymap.set('n', '<leader>e', function()
   vim.cmd [[NvimTreeToggle]]
 end, { desc = 'Toggle [e]xplorer'})
 
--- Telescope
--- See `:help telescope` and `:help telescope.setup()`
-require('telescope').setup {
-  defaults = {
-    mappings = {
-      i = {
-        ['<C-u>'] = false,
-        ['<C-d>'] = false,
-      },
-    },
-  },
-}
 vim.keymap.set('n', '<leader>sf', require('telescope.builtin').find_files, { desc = '[s]earch [f]iles' })
 vim.keymap.set('n', '<leader>sh', require('telescope.builtin').help_tags, { desc = '[s]earch [h]elp' })
 vim.keymap.set('n', '<leader>sb', require('telescope.builtin').oldfiles, { desc = '[sb] Find recently opened files' })
+vim.keymap.set('n', '<leader>sg', require('telescope.builtin').git_files, { desc = '[s]earch [g]it files' })
+vim.keymap.set('n', '<leader>sc', function() 
+  require('telescope.builtin').current_buffer_fuzzy_find(require('telescope.themes').get_dropdown {
+    winblend = 10,
+    previewer = false,
+  })
+end, { desc = '[s]earch [c]urrent buffer' })
 
 
 
@@ -219,6 +236,11 @@ vim.o.timeoutlen = 300
 vim.o.tabstop=4
 vim.o.shiftwidth=4
 vim.o.expandtab=true
+
+-- ###########
+-- ## Theme ##
+-- ###########
+vim.cmd [[colorscheme moonfly]]
 
 
 -- ##########################################

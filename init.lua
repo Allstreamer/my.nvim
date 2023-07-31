@@ -35,7 +35,6 @@ require("lazy").setup({
   {'nvim-tree/nvim-tree.lua', lazy = false},
 
   { 'echasnovski/mini.move', version = '*' },
-  { 'echasnovski/mini.fuzzy', version = '*' },
 
   {
     'nvim-telescope/telescope.nvim', tag = '0.1.2',
@@ -180,15 +179,14 @@ vim.api.nvim_create_autocmd("BufEnter", {
 -- ## Mini.Nvim ##
 -- ###############
 require('mini.move').setup()
-require('mini.fuzzy').setup()
 
 
 -- Telescope
 -- See `:help telescope` and `:help telescope.setup()`
 require('telescope').setup {
   defaults = {
-    generic_sorter = require('mini.fuzzy').get_telescope_sorter,
-    file_sorter = require('mini.fuzzy').get_telescope_sorter,
+    generic_sorter = require('telescope.sorters').get_fzy_sorter,
+    file_sorter = require('telescope.sorters').get_fzy_sorter,
     mappings = {
       i = {
         ['<C-u>'] = false,

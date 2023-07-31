@@ -145,7 +145,18 @@ require('nvim-treesitter.configs').setup({
 -- ###############
 -- ## Nvim Tree ##
 -- ###############
+local function nvim_tree_attach(buffer)
+  local api = require('nvim-tree.api')
+  local function opts(desc)
+    return { desc = "nvim-tree: " .. desc, buffer = bufnr, noremap = true, silent = true, nowait = true }
+  end
+  api.config.mappings.default_on_attach(buffer)
+
+  vim.keymap.set('n', '%', api.fs.create, opts('Create'))
+end
+
 require("nvim-tree").setup({
+  on_attach = nvim_tree_attach,
   actions = {
     open_file = {
       quit_on_open = true,

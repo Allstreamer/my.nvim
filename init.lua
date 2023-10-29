@@ -58,10 +58,8 @@ require("lazy").setup({
   },
 
   { "lukas-reineke/indent-blankline.nvim",
-    opts = {
-      char = '┊',
-      show_trailing_blankline_indent = false,
-    },
+    main = "ibl",
+    opts = {},
   },
 
   -- "gc" to comment visual regions/lines
@@ -101,6 +99,8 @@ require("lazy").setup({
   { "bluz71/vim-moonfly-colors", name = "moonfly", lazy = false, priority = 1000 },
   'milisims/nvim-luaref',
 })
+
+require("ibl").setup()
 
 -- ##############
 -- ## LSP Zero ##

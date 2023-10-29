@@ -31,6 +31,7 @@ require("lazy").setup({
   -- Auto manages indentation
   'tpope/vim-sleuth',
   'tpope/vim-fugitive',
+  'Raimondi/delimitMate',
 
   {'nvim-tree/nvim-tree.lua', lazy = false},
 
@@ -215,8 +216,6 @@ vim.keymap.set('n', '<leader>sc', function()
     previewer = false,
   })
 end, { desc = '[s]earch [c]urrent buffer' })
-
-
 
 -- ##############
 -- ## Settings ##
